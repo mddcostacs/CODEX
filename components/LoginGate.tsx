@@ -5,10 +5,13 @@ import { BarChart3 } from "lucide-react";
 import { isSupabaseConfigured, useAuth } from "@/hooks/useAuth";
 
 export function LoginGate({ children }: { children: React.ReactNode }) {
-  const { session, loading, signIn, signUp } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
+
+  // Só chama useAuth se o Supabase estiver configurado
+  const auth = isSupabaseConfigured ? useAuth() : null;
+  const { session, loading, signIn, signUp } = auth || {};
 
   if (!isSupabaseConfigured) {
     return (
@@ -31,8 +34,8 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
     event.preventDefault();
     setError("");
     try {
-      if (mode === "login") await signIn(form.email, form.password);
-      else await signUp(form.name, form.email, form.password);
+      if (mode === "login") await signIn?.(form.email, form.password);
+      else await signUp?.(form.name, form.email, form.password);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível autenticar.");
     }

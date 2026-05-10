@@ -15,4 +15,4 @@ export const supabase = isSupabaseConfigured
         detectSessionInUrl: true
       }
     })
-  : null;
+  : null as any; // Type as any to avoid TypeScript issues

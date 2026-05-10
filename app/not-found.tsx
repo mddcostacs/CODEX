@@ -1,4 +1,7 @@
-export default function NotFound() {
+import dynamic from 'next/dynamic';
+
+// Force client-side rendering for the 404 page
+const NotFound = dynamic(() => Promise.resolve(() => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
@@ -7,4 +10,6 @@ export default function NotFound() {
       </div>
     </div>
   );
-}
+}), { ssr: false });
+
+export default NotFound;
