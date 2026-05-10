@@ -9,9 +9,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
-  // Só chama useAuth se o Supabase estiver configurado
-  const auth = isSupabaseConfigured ? useAuth() : null;
-  const { session, loading, signIn, signUp } = auth || {};
+  const { session, loading, signIn, signUp } = useAuth();
 
   if (!isSupabaseConfigured) {
     return (

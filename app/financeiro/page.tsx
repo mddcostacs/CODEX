@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AlertCircle } from "lucide-react";
-import { SmallBadge, platformName } from "@/components/erp/OrderUi";
+import { platformName } from "@/components/erp/OrderUi";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import { orderService } from "@/lib/services";
 import { currency } from "@/lib/utils";

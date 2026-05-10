@@ -15,7 +15,6 @@ export default function UsuariosPage() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<UserProfileRow | null>(null);
-  const [message, setMessage] = useState("");
   const { data: items = [], loading, error, reload } = useAsyncData(() => userProfileService.list(search), [search]);
 
   return (
@@ -31,8 +30,6 @@ export default function UsuariosPage() {
       <input className="h-12 w-full rounded-xl border border-[#dfe3ee] bg-white px-4 shadow-sm outline-none focus:border-[#4f5df5]" placeholder="Buscar usuário" value={search} onChange={(event) => setSearch(event.target.value)} />
       {loading && <p className="rounded-xl bg-white p-4 text-sm text-[#667085]">Carregando usuários...</p>}
       {error && <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{error}</p>}
-      {message && <p className="rounded-xl bg-white p-4 text-sm font-semibold text-[#4f5df5]">{message}</p>}
-
       <section className="rounded-2xl bg-white shadow-sm">
         <div className="table-scroll overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">

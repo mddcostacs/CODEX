@@ -19,6 +19,7 @@ export function useAsyncData<T>(loader: () => Promise<T>, deps: DependencyList =
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   useEffect(() => {

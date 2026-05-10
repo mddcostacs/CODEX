@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Bike, Box, Camera, CheckCircle2, Clock3, FileText, MoreHorizontal, PenLine, Package, Timer } from "lucide-react";
+import { AlertCircle, Bike, Box, Camera, CheckCircle2, Clock3, FileText, PenLine, Package, Timer } from "lucide-react";
 import type { OrderRow, OperationStage } from "@/lib/database.types";
 import { currency, cn } from "@/lib/utils";
 

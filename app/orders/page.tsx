@@ -7,8 +7,8 @@ import { NewOrderModal } from "@/components/erp/NewOrderModal";
 import { GridOrderCard } from "@/components/erp/OrderUi";
 import { OrderDetailModal } from "@/components/erp/OrderDetailModal";
 import { useAsyncData } from "@/hooks/useAsyncData";
-import { orderService, platformService } from "@/lib/services";
-import type { OrderRow } from "@/lib/database.types";
+import { orderService, platformService, statuses } from "@/lib/services";
+import type { OrderRow, OrderStatus } from "@/lib/database.types";
 
 export default function OrdersPage() {
   const [search, setSearch] = useState("");
@@ -69,9 +69,10 @@ export default function OrdersPage() {
             }}
             onStatus={async (nextStatus) => {
               try {
+                const status = statuses.includes(nextStatus as OrderStatus) ? nextStatus as OrderStatus : order.status;
                 await orderService.update(order.id, {
-                  status: nextStatus as any,
-                  operation_stage: nextStatus === "Separando" ? "Separando" : nextStatus === "Pronto" || nextStatus === "Finalizado" || nextStatus === "Recebido" ? "Pronto" : "Novo"
+                  status,
+                  operation_stage: status === "Separando" ? "Separando" : status === "Pronto" || status === "Finalizado" || status === "Recebido" ? "Pronto" : "Novo"
                 });
                 reload();
               } catch (err) {

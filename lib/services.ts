@@ -83,7 +83,8 @@ function basePlatformPayload(payload: Partial<PlatformRow>) {
 
 function applyTextSearch<T>(query: T, columnList: string, search?: string) {
   if (!search?.trim()) return query;
-  return (query as any).or(columnList.split(",").map((column) => `${column}.ilike.%${search.trim()}%`).join(","));
+  const searchable = query as T & { or: (filters: string) => unknown };
+  return searchable.or(columnList.split(",").map((column) => `${column}.ilike.%${search.trim()}%`).join(",")) as T;
 }
 
 export const platformService = {
@@ -317,7 +318,7 @@ export const uploadService = {
     return data as UploadedFileRow;
   },
   async listByOrder(orderId: string) {
-    let query = client().from("uploaded_files").select("*").eq("order_id", orderId).order("created_at", { ascending: false });
+    const query = client().from("uploaded_files").select("*").eq("order_id", orderId).order("created_at", { ascending: false });
     const { data, error } = await query;
     if (error) {
       if (isMissingColumnError(error)) return [];
