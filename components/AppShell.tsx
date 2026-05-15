@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, Building2, ClipboardCheck, FileUp, Grid2X2, KeyRound, LogOut, Menu, PackageCheck, Users, WalletCards, X } from "lucide-react";
+import { Boxes, Building2, ClipboardCheck, FileUp, Grid2X2, LogOut, Menu, PackageCheck, Users, WalletCards, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,9 +15,8 @@ const navGroups = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { changePassword, signOut } = useAuth();
+  const { signOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const mobileItems = navGroups.flatMap((group) => group.items);
 
   return (
@@ -35,10 +34,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
         <div className="border-t border-[#eef1f6] px-3 py-4 text-center text-xs text-[#667085]">
-          <button className="mb-3 inline-flex items-center gap-2 text-[#667085] hover:text-[#071124]" onClick={() => setPasswordModalOpen(true)} aria-label="Alterar senha">
-            <KeyRound size={18} /><span className="hidden xl:inline">Alterar senha</span>
-          </button>
-          <br className="hidden xl:block" />
           <button className="mb-3 inline-flex items-center gap-2 text-[#667085] hover:text-[#071124]" onClick={signOut} aria-label="Sair">
             <LogOut size={18} /><span className="hidden xl:inline">Sair</span>
           </button>
@@ -70,10 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex min-h-16 items-center justify-between px-4">
             <button className="rounded-xl p-2 text-[#071124]" onClick={() => setOpen(true)} aria-label="Abrir menu"><Menu size={22} /></button>
             <p className="text-lg font-black">ERP Pedidos</p>
-            <div className="flex items-center gap-1">
-              <button className="rounded-lg p-2 text-[#667085]" onClick={() => setPasswordModalOpen(true)} aria-label="Alterar senha"><KeyRound size={18} /></button>
-              <button className="rounded-lg p-2 text-[#667085]" onClick={signOut} aria-label="Sair"><LogOut size={18} /></button>
-            </div>
+            <button className="rounded-lg p-2 text-[#667085]" onClick={signOut} aria-label="Sair"><LogOut size={18} /></button>
           </div>
           <nav className="table-scroll flex gap-1 overflow-x-auto px-3 pb-3">
             {mobileItems.map((item) => {
@@ -85,95 +77,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
         <main className="min-h-screen px-3 py-4 sm:px-5 sm:py-6 lg:px-7">{children}</main>
       </div>
-      <ChangePasswordModal
-        open={passwordModalOpen}
-        onClose={() => setPasswordModalOpen(false)}
-        onChangePassword={changePassword}
-      />
-    </div>
-  );
-}
-
-function ChangePasswordModal({ open, onClose, onChangePassword }: { open: boolean; onClose: () => void; onChangePassword: (password: string) => Promise<void> }) {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState<"idle" | "saving" | "success">("idle");
-  const [message, setMessage] = useState("");
-
-  if (!open) return null;
-
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    setMessage("");
-
-    if (password.length < 6) {
-      setMessage("A nova senha precisa ter pelo menos 6 caracteres.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setMessage("As senhas digitadas nÃ£o conferem.");
-      return;
-    }
-
-    try {
-      setStatus("saving");
-      await onChangePassword(password);
-      setStatus("success");
-      setPassword("");
-      setConfirmPassword("");
-      setMessage("Senha alterada com sucesso.");
-    } catch (err) {
-      setStatus("idle");
-      setMessage(err instanceof Error ? err.message : "NÃ£o foi possÃ­vel alterar a senha.");
-    }
-  }
-
-  function close() {
-    if (status === "saving") return;
-    setPassword("");
-    setConfirmPassword("");
-    setMessage("");
-    setStatus("idle");
-    onClose();
-  }
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="change-password-title" onClick={close}>
-      <form className="w-full max-w-md rounded-lg bg-white p-5 shadow-2xl" onSubmit={submit} onClick={(event) => event.stopPropagation()}>
-        <div className="mb-5 flex items-center justify-between gap-4">
-          <div>
-            <h2 id="change-password-title" className="text-lg font-bold text-[#071124]">Alterar senha</h2>
-            <p className="mt-1 text-sm text-[#667085]">Defina uma nova senha para o seu acesso.</p>
-          </div>
-          <button type="button" className="rounded-lg p-2 text-[#667085] hover:bg-[#f6f7fb] hover:text-[#071124]" onClick={close} aria-label="Fechar">
-            <X size={19} />
-          </button>
-        </div>
-
-        <label className="mb-3 block">
-          <span className="mb-1 block text-sm font-semibold text-[#344054]">Nova senha</span>
-          <input className="h-11 w-full rounded-lg border border-[#dfe3ee] px-3 outline-none focus:border-[#4f5df5]" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" />
-        </label>
-
-        <label className="mb-4 block">
-          <span className="mb-1 block text-sm font-semibold text-[#344054]">Confirmar senha</span>
-          <input className="h-11 w-full rounded-lg border border-[#dfe3ee] px-3 outline-none focus:border-[#4f5df5]" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" />
-        </label>
-
-        {message && (
-          <p className={`mb-4 rounded-lg p-3 text-sm ${status === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
-            {message}
-          </p>
-        )}
-
-        <div className="flex justify-end gap-2">
-          <button type="button" className="h-10 rounded-lg border border-[#dfe3ee] px-4 font-semibold text-[#344054] hover:bg-[#f6f7fb]" onClick={close}>Cancelar</button>
-          <button className="h-10 rounded-lg bg-[#4f5df5] px-4 font-semibold text-white hover:bg-[#3f4ee8] disabled:cursor-not-allowed disabled:opacity-60" disabled={status === "saving"}>
-            {status === "saving" ? "Salvando..." : "Salvar senha"}
-          </button>
-        </div>
-      </form>
     </div>
   );
 }
